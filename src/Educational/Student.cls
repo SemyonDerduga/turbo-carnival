@@ -5,6 +5,8 @@ Relationship meetings As Educational.Meeting [ Cardinality = many, Inverse = stu
 
 Property info As %Library.String;
 
+Index emailKey On email [ Unique ];
+
 Storage Default
 {
 <Data name="StudentDefaultData">

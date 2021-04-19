@@ -3,9 +3,7 @@ Class Educational.Teacher Extends (%Library.Persistent, %Populate, Educational.P
 
 Relationship meetings As Educational.Meeting [ Cardinality = many, Inverse = teacher ];
 
-Relationship subjects As Educational.Subject [ Cardinality = many, Inverse = teacher ];
-
-Property info As %Library.String;
+Relationship subjects As Educational.Subject [ Cardinality = one, Inverse = teacher ];
 
 Storage Default
 {
@@ -20,10 +18,10 @@ Storage Default
 <Value>email</Value>
 </Value>
 <Value name="4">
-<Value>info</Value>
+<Value>phone</Value>
 </Value>
 <Value name="5">
-<Value>phone</Value>
+<Value>subjects</Value>
 </Value>
 </Data>
 <DataLocation>^Educational.TeacherD</DataLocation>

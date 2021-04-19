@@ -1,9 +1,9 @@
 Class Educational.Subject Extends (%Library.Persistent, %Populate)
 {
 
-Relationship teacher As Educational.Teacher [ Cardinality = one, Inverse = subjects ];
+Relationship teacher As Educational.Teacher [ Cardinality = many, Inverse = subjects ];
 
-Property name As %Library.String;
+Property subjectName As %Library.String;
 
 Storage Default
 {
@@ -15,7 +15,7 @@ Storage Default
 <Value>teacher</Value>
 </Value>
 <Value name="3">
-<Value>name</Value>
+<Value>subjectName</Value>
 </Value>
 </Data>
 <DataLocation>^Educational.SubjectD</DataLocation>
