@@ -1,0 +1,152 @@
+Teacher: 
+{
+    "teacherId": "int",
+    "email": "str",
+    "name": "str",
+    "yearsExperience": "int"
+}
+
+Student:
+{
+    "studentId": "int",
+    "email": "str",
+    "name": "str"
+}
+
+Subject:
+{
+    "subjectId": "int",
+    "subjectName": "str",
+}
+
+Meeting:
+{
+    "meetingId": "int",
+    "teacherId": "int",
+    "studentId": "int",
+    "title": "str",
+    "time": "int"
+    "subjectId": "int"
+}
+
+GET subjects:
+input = ()
+output = {
+    "subjects": [
+        {
+            "subjectId": "int",
+            "subjectName": "str"
+        }
+    ]
+}
+
+POST subjects:
+input = {
+    "subjectName": "str",
+}
+output = {
+    {
+        "subjectId": "int",
+        "subjectName": "str"
+    }
+}
+
+GET teachers:
+input = ()
+output = {
+    "teachers": [
+        {
+            "teacherId": "int",
+            "email": "str",
+            "name": "str"
+        }
+    ]
+}
+
+POST teachers:
+input = {
+    "email": "str",
+    "name": "str"
+}
+output = {
+    {
+        "teacherId": "int",
+        "email": "str",
+        "name": "str"
+    }
+}
+
+GET students:
+input = ()
+output = {
+    "students": [
+        {
+            "studentId": "int",
+            "email": "str",
+            "name": "str"
+        }
+    ]
+}
+
+POST students:
+input = {
+    "email": "str",
+    "name": "str"
+}
+output = {
+    {
+        "studentId": "int",
+        "email": "str",
+        "name": "str"
+    }
+}
+
+POST meeting:
+input = {
+    "teacherId": "int",
+    "studentId": "int",
+    "subjectId": "int",
+    "title": "str",
+    "time": "int" # POSIX-time # на фронте - datetime.toPosix()
+}
+output = {
+    "teacherId": "int",
+    "studentId": "int",
+    "title": "str",
+    "time": "int",
+    "meetingId": "int",
+    "subjectId",
+}
+
+GET teachers/:teacherId/meetings:
+input = {
+    # в path-параметрах "teacherId": "int"
+}
+output = {
+    "meetings": [
+        {
+            "teacherId": "int",
+            "studentId": "int",
+            "title": "str",
+            "time": "int",
+            "meetingId": "int"
+        }
+    ]
+}
+
+
+
+# админша выбирает студента, выбирает препода, вводит параметры митинга и нажимает "отправить"
+
+* get getTeachers - список преподов ответ: {"teachers": {"ivan": ["math","physics"], "petr": ["russian_language"]}}
+* get getStudents - список студентов ответ:["ivan", "petr"]
+
+* post addMeeting- добавить встречу  запрос: {"teacher_email":"ivan", "student_email": "govnar", "title":"some meeting"}
+
+* get getTeacherMeeting - получить встречи для препода запрос: {"teacher_email":"ivan"}
+ответ: [{"teacher":"ivan", "student": "govnar", "title":"some meeting"},{"teacher":"ivan", "student": "govnar", "title":"some meeting"}]
+
+
+? post deleteMeeting - удалить встречу  запрос: {"meeting": "title"}
+* post - создать студента запрос: {"name": "ivan", "email": "f@ck.you", "phone":"+7 228 1337", "info": "is a fucker"}
+* post - создать препода запрос: {"name": "ivan", ("subjects":"math, physics"), "email": "f@ck.you", "phone":"+7 228 1337"}

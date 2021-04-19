@@ -3,7 +3,7 @@ Class Educational.Student Extends (%Library.Persistent, %Populate, Educational.P
 
 Relationship meetings As Educational.Meeting [ Cardinality = many, Inverse = student ];
 
-Property info As %Library.String;
+Property age As %Integer;
 
 Index emailKey On email [ Unique ];
 
@@ -17,13 +17,10 @@ Storage Default
 <Value>name</Value>
 </Value>
 <Value name="3">
-<Value>email</Value>
+<Value>age</Value>
 </Value>
 <Value name="4">
-<Value>phone</Value>
-</Value>
-<Value name="5">
-<Value>info</Value>
+<Value>email</Value>
 </Value>
 </Data>
 <DataLocation>^Educational.StudentD</DataLocation>

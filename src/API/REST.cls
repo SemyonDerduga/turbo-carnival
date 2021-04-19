@@ -9,7 +9,19 @@ Parameter CONTENTTYPE = "application/json";
 XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
-	<Route Url="/addStudent" Method="POST" Call="AddStudent"/>
+	<Route Url="/subjects" Method="GET" Call="GetSubjects"/>
+	<Route Url="/subjects" Method="POST" Call="AddSubject"/>
+	<Route Url="/teachers" Method="GET" Call="GetTeachers"/>
+	<Route Url="/teachers" Method="POST" Call="AddTeacher"/>
+	<Route Url="/students" Method="GET" Call="GetStudents"/>
+	<Route Url="/students" Method="POST" Call="AddStudent"/>
+	<Route Url="/meeting" Method="POST" Call="AddMeeting"/>
+	<Route Url="/teachers/:teacherId/meetings" Method="GET" Call="GetTeacherMeetings"/>
+
+
+
+
+	<!-- <Route Url="/addStudent" Method="POST" Call="AddStudent"/>
 	<Route Url="/addTeacher" Method="POST" Call="AddTeacher"/>
 	<Route Url="/getSubjects" Method="GET" Call="GetSubjects"/>
 	<Route Url="/test" Method="GET" Call="Test"/>
@@ -18,7 +30,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 	<Route Url="/doctors/:idDoctor" Method="GET" Call="getDoctor"/>
 	<Route Url="/doctors/:idDoctor" Method="GET" Call="getDoctor"/>
 	<Route Url="/patient" Method="GET" Call="patientByEmail"/>
-	<Route Url="/appointments" Method="POST" Call="makeAppointment"/>
+	<Route Url="/appointments" Method="POST" Call="makeAppointment"/> -->
 
 </Routes>
 }
@@ -28,14 +40,10 @@ ClassMethod AddTeacher() As %Status
 	Set sc = $$$OK
 	Try {
 		set jo = {}.%FromJSON(%request.Content)
-		#; set teacherSubjects = ##class(Educational.Subject).%New()
-		#; set teacherSubjects.subjectsNames = jo.subjects
-		#; set sc = teacherSubjects.%Save()
-
 		set teacher = ##class(Educational.Teacher).%New()
 		set teacher.name = jo.name
 		set teacher.email = jo.email
-		set teacher.phone = jo.phone
+		set teacher.yearsExperience = jo.yearsExperience
 		set sc = teacher.%Save()
 	} catch ex {
 		Set errText = $SYSTEM.Status.GetErrorText(ex.AsStatus())
@@ -43,6 +51,13 @@ ClassMethod AddTeacher() As %Status
 		return ex
 	}
 
+	Set cTeacher = {
+		"teacherId": (teacher.%Id()),
+		"name": (teacher.name),
+		"email": (teacher.email),
+		"yearsExperience": (teacher.yearsExperience)
+	}
+	Write cTeacher.%ToJSON()
 	Return sc
 }
 
@@ -54,14 +69,43 @@ ClassMethod AddStudent() As %Status
 		set student = ##class(Educational.Student).%New()
 		set student.name = jo.name
 		set student.email = jo.email
-		set student.phone = jo.phone
-		set student.info = jo.info
+		set student.age = jo.age
 		set sc = student.%Save()
 	} catch ex {
 		Set errText = $SYSTEM.Status.GetErrorText(ex.AsStatus())
 		Write errText
 		return ex
 	}
+
+	Set cStudent = {
+		"studentId": (student.%Id()),
+		"name": (student.name),
+		"email": (student.email),
+		"age": (student.age)
+	}
+	Write cStudent.%ToJSON()
+	Return sc
+}
+
+ClassMethod AddSubject() As %Status
+{
+	Set sc = $$$OK
+	Try {
+		set jo = {}.%FromJSON(%request.Content)
+		set subject = ##class(Educational.Subject).%New()
+		set subject.subjectName = jo.subjectName
+		set sc = subject.%Save()
+	} catch ex {
+		Set errText = $SYSTEM.Status.GetErrorText(ex.AsStatus())
+		Write errText
+		return ex
+	}
+
+	Set cSubject = {
+		"subjectId": (subject.%Id()),
+		"subjectName": (subject.subjectName)
+	}
+	Write cSubject.%ToJSON()
 	Return sc
 }
 
