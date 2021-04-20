@@ -141,6 +141,20 @@ output = {
     ]
 }
 
+GET meetings/:meetingId/delete:
+input = {
+    # в path-параметрах "meetingId", "int", 
+}
+output = {
+    "meetings": [
+        {
+            "title": "str",
+            "time": "int",
+            "meetingId": "int"
+        }
+    ]
+}
+
 
 
 # админша выбирает студента, выбирает препода, вводит параметры митинга и нажимает "отправить"

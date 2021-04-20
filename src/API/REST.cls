@@ -17,6 +17,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 	<Route Url="/students" Method="GET" Call="GetStudents"/>
 	<Route Url="/students" Method="POST" Call="AddStudent"/>
 	<Route Url="/meetings" Method="POST" Call="AddMeeting"/>
+	<Route Url="/meetings/:meetingId/delete" Method="GET" Call="DeleteMeeting"/>
 	<Route Url="/teachers/:teacherId/meetings" Method="GET" Call="GetTeacherMeetings"/>
 
 </Routes>
@@ -144,6 +145,23 @@ ClassMethod GetTeacherMeetings(teacherId As %Integer) As %Status
 		Do obj.meetings.%Push(meeting)
 	}
 	Write obj.%ToJSON()
+	Return sc
+}
+
+ClassMethod DeleteMeeting(meetingId As %Integer) As %Status
+{
+	Set sc = $$$OK
+	Set meeting = ##class(Educational.Meeting).%OpenId(meetingId)
+	Set sql = "DELETE FROM Educational.Meeting WHERE ID = ?"
+	Set rs = ##class(%SQL.Statement).%ExecDirect(, sql, meetingId)
+
+	Set cMeeting = {
+		"meetingId": ($NUM(meeting.%Id())),
+		"title": (meeting.title),
+		"time": (meeting.time)
+	}
+	Write cMeeting.%ToJSON()
+
 	Return sc
 }
 
