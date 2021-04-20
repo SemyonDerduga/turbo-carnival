@@ -9,6 +9,7 @@ Parameter CONTENTTYPE = "application/json";
 XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
+    <Route Url="/test" Method="GET" Call="Test"/>
 	<Route Url="/subjects" Method="GET" Call="GetSubjects"/>
 	<Route Url="/subjects" Method="POST" Call="AddSubject"/> 
 	<Route Url="/teachers" Method="GET" Call="GetTeachers"/>
