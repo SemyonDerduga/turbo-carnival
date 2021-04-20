@@ -18,20 +18,6 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 	<Route Url="/meetings" Method="POST" Call="AddMeeting"/>
 	<Route Url="/teachers/:teacherId/meetings" Method="GET" Call="GetTeacherMeetings"/>
 
-
-
-
-	<!-- <Route Url="/addStudent" Method="POST" Call="AddStudent"/>
-	<Route Url="/addTeacher" Method="POST" Call="AddTeacher"/>
-	<Route Url="/getSubjects" Method="GET" Call="GetSubjects"/>
-	<Route Url="/test" Method="GET" Call="Test"/>
-	<Route Url="/login" Method="POST" Call="signUp"/>
-	<Route Url="/getDoctors" Method="GET" Call="getDoctors"/>
-	<Route Url="/doctors/:idDoctor" Method="GET" Call="getDoctor"/>
-	<Route Url="/doctors/:idDoctor" Method="GET" Call="getDoctor"/>
-	<Route Url="/patient" Method="GET" Call="patientByEmail"/>
-	<Route Url="/appointments" Method="POST" Call="makeAppointment"/> -->
-
 </Routes>
 }
 
