@@ -10,12 +10,12 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
 	<Route Url="/subjects" Method="GET" Call="GetSubjects"/>
-	<Route Url="/subjects" Method="POST" Call="AddSubject"/>
+	<Route Url="/subjects" Method="POST" Call="AddSubject"/> 
 	<Route Url="/teachers" Method="GET" Call="GetTeachers"/>
 	<Route Url="/teachers" Method="POST" Call="AddTeacher"/>
 	<Route Url="/students" Method="GET" Call="GetStudents"/>
 	<Route Url="/students" Method="POST" Call="AddStudent"/>
-	<Route Url="/meeting" Method="POST" Call="AddMeeting"/>
+	<Route Url="/meetings" Method="POST" Call="AddMeeting"/>
 	<Route Url="/teachers/:teacherId/meetings" Method="GET" Call="GetTeacherMeetings"/>
 
 
@@ -52,7 +52,8 @@ ClassMethod AddTeacher() As %Status
 	}
 
 	Set cTeacher = {
-		"teacherId": (teacher.%Id()),
+		#; ($NUM(student.%Id()))
+		"teacherId": ($NUM(teacher.%Id())),
 		"name": (teacher.name),
 		"email": (teacher.email),
 		"yearsExperience": (teacher.yearsExperience)
@@ -78,7 +79,7 @@ ClassMethod AddStudent() As %Status
 	}
 
 	Set cStudent = {
-		"studentId": (student.%Id()),
+		"studentId": ($NUM(student.%Id())),
 		"name": (student.name),
 		"email": (student.email),
 		"age": (student.age)
@@ -102,10 +103,107 @@ ClassMethod AddSubject() As %Status
 	}
 
 	Set cSubject = {
-		"subjectId": (subject.%Id()),
-		"subjectName": (subject.subjectName)
+		"subjectName": (subject.subjectName),
+		"subjectId": ($NUM(subject.%Id()))
 	}
 	Write cSubject.%ToJSON()
+	Return sc
+}
+
+ClassMethod AddMeeting() As %Status
+{
+	Set sc = $$$OK
+	Try {
+		set jo = {}.%FromJSON(%request.Content)
+
+		set meeting = ##class(Educational.Meeting).%New()
+		set meeting.title = jo.title
+		set meeting.time = jo.time
+
+		Do meeting.teacherSetObjectId(jo.teacherId)
+		Do meeting.studentSetObjectId(jo.studentId)
+		Do meeting.subjectSetObjectId(jo.subjectId)
+
+		set sc = meeting.%Save()
+
+		Set cMeeting = {
+			"meetingId": ($NUM(meeting.%Id())),
+			"title": (meeting.title),
+			"time": (meeting.time),
+			"teacherId": (jo.teacherId),
+			"studentId": (jo.studentId),
+			"subjectId": (jo.subjectId)
+		}
+		Write cMeeting.%ToJSON()
+
+	} catch ex {
+		Set errText = $SYSTEM.Status.GetErrorText(ex.AsStatus())
+		Write errText
+		return ex
+	}
+
+	Return sc
+}
+
+ClassMethod GetTeacherMeetings(teacherId As %Integer) As %Status
+{
+	Set sc = $$$OK
+	Set sql = "select JSON_OBJECT('teacherId': teacher, 'studentId': student, 'title': title, 'time': ""time"", 'meetingId': ID) as meeting FROM Educational.Meeting WHERE teacher = ?"
+	Set rs = ##class(%SQL.Statement).%ExecDirect(, sql, teacherId)
+	Set obj = {"meetings": []}
+
+	while rs.%Next() {
+		Set meeting = {}.%FromJSON(rs.meeting)
+		Do obj.meetings.%Push(meeting)
+	}
+	Write obj.%ToJSON()
+	Return sc
+}
+
+ClassMethod GetSubjects() As %Status
+{
+	Set sc = $$$OK
+	Set sql = "select JSON_OBJECT('subjectId': ID, 'subjectName': subjectName) as subject FROM Educational.Subject"
+	Set rs = ##class(%SQL.Statement).%ExecDirect(, sql)
+	Set obj = {"subjects": []}
+
+	while rs.%Next() {
+		Set subject = {}.%FromJSON(rs.subject)
+		Do obj.subjects.%Push(subject)
+	}
+	Write obj.%ToJSON()
+	Return sc
+}
+
+ClassMethod GetTeachers() As %Status
+{
+	Set sc = $$$OK
+	Set sql = "select JSON_OBJECT('teacherId': ID, 'email': email, 'name': name, 'yearsExperience': yearsExperience) as teacher FROM Educational.Teacher"
+	Set rs = ##class(%SQL.Statement).%ExecDirect(, sql)
+	Set obj = {"teachers": []}
+
+	while rs.%Next() {
+		Set teacher = {}.%FromJSON(rs.teacher)
+		Do obj.teachers.%Push(teacher)
+	}
+	Write obj.%ToJSON()
+	Return sc
+}
+
+ClassMethod GetStudents() As %Status
+{
+	Set sc = $$$OK
+	Set sql = "select JSON_OBJECT('studentId': ID, 'email': email, 'name': name, 'age': age) as student FROM Educational.Student"
+	Set rs = ##class(%SQL.Statement).%ExecDirect(, sql)
+	Set obj = {"students": []}
+
+	#; Do rs.%Display()
+
+	while rs.%Next() {
+		Set student = {}.%FromJSON(rs.student)
+		Do obj.students.%Push(student)
+	}
+	Write obj.%ToJSON()
 	Return sc
 }
 
@@ -115,125 +213,6 @@ ClassMethod Test() As %Status
 	Set obj = {"msg":"It works","today": (currentDate)}
 	Write obj.%ToJSON()
 	Return $$$OK
-}
-
-ClassMethod getDoctors() As %Status
-{
-	Set sc = $$$OK
-	Set sql = "select JSON_OBJECT('ID': ID, 'FIO':FIO, 'birthDate':birthDate, 'email': email, 'phone': phone) as doctor FROM Dentistry.Doctor"
-	Set rs = ##class(%SQL.Statement).%ExecDirect(, sql)
-	Set obj = {"doctors": []}
-
-	while rs.%Next() {
-		Set doctor = {}.%FromJSON(rs.doctor)
-		Do obj.doctors.%Push(doctor)
-	}
-	Write obj.%ToJSON()
-	Return sc
-}
-
-ClassMethod signUp() As %Status
-{
-	Set sc = $$$OK
-	try{
-		set jo = {}.%FromJSON(%request.Content)
-		set client = ##class(Dentistry.Patient).%New()
-		set client.FIO = jo.FIO
-		set client.birthDate = $ZDATEH(jo.birthDate, 3)
-		set client.email = jo.email
-		set client.phone = jo.phone
-		set sc = client.%Save()
-	} catch ex {
-		Set errText = $SYSTEM.Status.GetErrorText(ex.AsStatus())
-		Write errText
-		return ex
-	}
-	Return sc
-}
-
-ClassMethod getDoctor(idDoctor As %Integer) As %Status
-{
-	Set sc = $$$OK
-	Set doctor = ##class(Dentistry.Doctor).%OpenId(idDoctor)
-	Set d = {"schedules": []}
-	Set key = ""
-	Do {
-		Set schedule = doctor.schedules.GetNext(.key)
-		If (schedule '= "") {
-			Set sch = {"date": (schedule.date)}
-			Do d.schedules.%Push(sch)
-		}
-	} While (key '= "")
-
-	Set dDoctor = {
-		"ID": (doctor.%Id()),
-		"FIO": (doctor.FIO),
-		"birthDate": (doctor.birthDate), 
-		"education": (doctor.education), 
-		"email": (doctor.email), 
-		"experience": (doctor.experience), 
-		"phone": (doctor.phone)
-	}
-	Set d.doctor = dDoctor
-
-	Write d.%ToJSON()
-	Return sc
-}
-
-ClassMethod patientByEmail() As %Status
-{
-	Set sc = $$$OK
-	Set FormEmail = $GET(%request.Data("email", 1))
-	Set pat = ##class(Dentistry.Patient).emailKeyOpen(FormEmail)
-	Set pPat = {
-		"FIO": (pat.FIO), 
-		"birthDate": (pat.birthDate), 
-		"medicalHistory": (pat.medicalHistory), 
-		"email": (pat.email), 
-		"addInfo": (pat.addInfo), 
-		"phone": (pat.phone)
-	}
-	
-	
-	Set p = {"appointments": [], "patient": (pPat)}
-	Set key = ""
-	Do {
-		Set appointment = pat.appointments.GetNext(.key)
-		If (appointment '= "") {
-			Set doctor = appointment.doctor
-			Set dDoctor = {
-				"FIO": (doctor.FIO),
-				"birthDate": (doctor.birthDate),
-				"education": (doctor.education),
-				"email": (doctor.email),
-				"experience": (doctor.experience),
-				"phone": (doctor.phone)
-			}
-			Set sch = {"date": (appointment.date), "doctor": (dDoctor)}
-			Do p.appointments.%Push(sch)
-		}
-	} While (key '= "")
-
-	Write p.%ToJSON()
-
-	Return sc
-}
-
-ClassMethod makeAppointment() As %Status
-{
-	Set sc = $$$OK
-	set jo = {}.%FromJSON(%request.Content)
-	Set pat = ##class(Dentistry.Patient).emailKeyOpen(jo.userEmail)
-
-	Set appointment = ##class(Dentistry.Appointment).%New()
-
-	set appointment.date = jo.date
-
-	Do appointment.patientSetObjectId(pat.%Id())
-	Do appointment.doctorSetObjectId(jo.doctorId)
-	Do appointment.%Save()
-
-	Return sc
 }
 
 }

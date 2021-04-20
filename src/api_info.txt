@@ -10,7 +10,8 @@ Student:
 {
     "studentId": "int",
     "email": "str",
-    "name": "str"
+    "name": "str",
+    "age": "int"
 }
 
 Subject:
@@ -58,7 +59,8 @@ output = {
         {
             "teacherId": "int",
             "email": "str",
-            "name": "str"
+            "name": "str",
+            "yearsExperience": "int"
         }
     ]
 }
@@ -66,13 +68,15 @@ output = {
 POST teachers:
 input = {
     "email": "str",
-    "name": "str"
+    "name": "str",
+    "yearsExperience": "int"
 }
 output = {
     {
         "teacherId": "int",
         "email": "str",
-        "name": "str"
+        "name": "str",
+        "yearsExperience": "int"
     }
 }
 
@@ -83,7 +87,8 @@ output = {
         {
             "studentId": "int",
             "email": "str",
-            "name": "str"
+            "name": "str",
+            "age": "int"
         }
     ]
 }
@@ -91,17 +96,19 @@ output = {
 POST students:
 input = {
     "email": "str",
-    "name": "str"
+    "name": "str",
+    "age": "int"
 }
 output = {
     {
         "studentId": "int",
         "email": "str",
-        "name": "str"
+        "name": "str",
+        "age": "int"
     }
 }
 
-POST meeting:
+POST meetings:
 input = {
     "teacherId": "int",
     "studentId": "int",
@@ -115,7 +122,7 @@ output = {
     "title": "str",
     "time": "int",
     "meetingId": "int",
-    "subjectId",
+    "subjectId": "int",
 }
 
 GET teachers/:teacherId/meetings:

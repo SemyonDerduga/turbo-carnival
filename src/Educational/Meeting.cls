@@ -1,11 +1,15 @@
 Class Educational.Meeting Extends (%Library.Persistent, %Library.Populate)
 {
 
-Relationship teacher As Educational.Teacher [ Cardinality = one, Inverse = appointments ];
+Relationship teacher As Educational.Teacher [ Cardinality = one, Inverse = meetings ];
 
-Relationship student As Educational.Student [ Cardinality = one, Inverse = appointments ];
+Relationship student As Educational.Student [ Cardinality = one, Inverse = meetings ];
 
-Property date As %PosixTime;
+Relationship subject As Educational.Subject [ Cardinality = one, Inverse = meetings ];
+
+Property time As %Integer;
+
+Property title As %String;
 
 Storage Default
 {
@@ -20,7 +24,13 @@ Storage Default
 <Value>student</Value>
 </Value>
 <Value name="4">
-<Value>date</Value>
+<Value>subject</Value>
+</Value>
+<Value name="5">
+<Value>time</Value>
+</Value>
+<Value name="6">
+<Value>title</Value>
 </Value>
 </Data>
 <DataLocation>^Educational.MeetingD</DataLocation>
